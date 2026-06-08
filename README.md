@@ -1,25 +1,61 @@
 # AudioLivenessDetection
 
-端侧 PCM 音频活体检测：区分 **真人实时麦克风** 与 **录音回放**。
+**On-device PCM audio liveness detection for Swift — classify live microphone speech vs recorded replay.**
 
-纯 Swift 实现，无第三方依赖，适用于 iOS 13+ / macOS 11+。
+端侧 PCM 音频活体检测 · 纯 Swift · 零依赖 · 区分真人麦克风与录音回放
 
-## 特性
+[![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/Platform-iOS%2013%2B%20%7C%20macOS%2011%2B-blue.svg)](Package.swift)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![SPM](https://img.shields.io/badge/Swift%20PM-compatible-brightgreen.svg)](Package.swift)
 
-- 基于 VAD + FFT 频谱特征（LF / HF / 谱流变异系数）
-- 5 秒滑动缓冲，可配置检测间隔（默认 10 秒）
-- 分析在后台队列执行，不阻塞音频回调
-- 支持动态采样率 / 声道（默认 32 kHz mono int16 LE）
+> **GitHub:** [mythkiven/AudioLivenessDetection](https://github.com/mythkiven/AudioLivenessDetection)
 
-## 快速开始
+---
 
-### Swift Package Manager
+## What is this?
+
+**Audio liveness detection** analyzes raw PCM audio on the device (no cloud, no ASR) and returns:
+
+| Result | Meaning |
+|--------|---------|
+| **Live** | Real-time microphone capture |
+| **Replay** | Likely pre-recorded / played-back audio |
+| **Uncertain** | Not enough voice or ambiguous features |
+
+Use cases: voice chat, RTC apps, anti-spoofing hooks, risk control pipelines.
+
+**Keywords:** `audio liveness` · `live vs replay` · `PCM` · `VAD` · `FFT` · `on-device` · `Swift Package` · `iOS` · `macOS` · `voice activity detection`
+
+---
+
+## Features
+
+- **On-device** — VAD + FFT spectral features (LF / HF / spectral flux CV)
+- **Lightweight** — pure Swift, zero third-party dependencies
+- **Non-blocking** — 5 s ring buffer, analysis on a background queue
+- **Flexible input** — int16 LE PCM, dynamic sample rate / channels (default 32 kHz mono)
+- **Demos included** — macOS CLI + iOS SwiftUI
+
+---
+
+## Installation (Swift Package Manager)
 
 ```swift
 dependencies: [
-    .package(path: "AudioLivenessDetection"), // 或远程 URL
+    .package(url: "https://github.com/mythkiven/AudioLivenessDetection.git", from: "1.0.0"),
 ]
 ```
+
+Or local path during development:
+
+```swift
+.package(path: "../AudioLivenessDetection")
+```
+
+---
+
+## Quick Start
 
 ```swift
 import AudioLivenessDetection
@@ -27,12 +63,16 @@ import AudioLivenessDetection
 let service = AudioLivenessService.shared
 
 service.onLivenessResult = { report in
-    print(report.result.displayName, report.replayScore)
+    switch report.result {
+    case .live:      print("Live")
+    case .replay:    print("Replay")
+    case .uncertain: print("Uncertain")
+    }
 }
 
 service.applyDetectionEnabled(true, intervalSec: 10)
 
-// 在音频回调中喂 PCM
+// Feed PCM from your audio callback (RTC prep, AVAudioEngine, etc.)
 service.feedPCM(
     pcmData,
     format: PCMFrameFormat(
@@ -44,7 +84,7 @@ service.feedPCM(
 )
 ```
 
-### 直接使用 Detector（无 Service 封装）
+### Lower-level API
 
 ```swift
 let detector = AudioLivenessDetector()
@@ -53,80 +93,79 @@ detector.start()
 detector.feedAudioFrame(pcmData)
 ```
 
+---
+
 ## Demo
 
-### macOS 命令行
+### macOS CLI
 
 ```bash
+git clone https://github.com/mythkiven/AudioLivenessDetection.git
 cd AudioLivenessDetection
 swift run AudioLivenessDemoCLI
 ```
 
-对着麦克风说话，终端每 10 秒输出一次检测结果。`Ctrl+C` 退出。
+Speak into the mic — results print every 10 seconds. `Ctrl+C` to quit.
 
 ### iOS SwiftUI
 
-1. 用 Xcode 打开 `Package.swift`
-2. Scheme 选择 **AudioLivenessDemo**，运行到真机或模拟器
-3. 在 Target → Info 中添加：
+1. Open `Package.swift` in Xcode
+2. Select scheme **AudioLivenessDemo** → run on device or simulator
+3. Add to target Info: **Privacy - Microphone Usage Description**
+4. Tap **Start**
 
-   | Key | Value |
-   |-----|-------|
-   | `Privacy - Microphone Usage Description` | Demo needs microphone access |
+---
 
-4. 点击 **Start** 开始检测
+## Documentation
 
-## 检测结果
+| Doc | Audience |
+|-----|----------|
+| [README.md](README.md) (this file) | Overview, install, demo |
+| [Docs/TECHNICAL.md](Docs/TECHNICAL.md) | Algorithm, formulas, all thresholds |
 
-| `LivenessResult` | 含义 |
-|------------------|------|
-| `.live` | 真人 |
-| `.replay` | 录音回放 |
-| `.uncertain` | 不确定（人声不足或特征模糊） |
+---
 
-`LivenessDetectionReport.isClassified == false` 表示人声不足等提前退出，此时 `replayScore` 等为 0。
-
-## 项目结构
+## Project Layout
 
 ```
-AudioLivenessDetection/
-├── Package.swift
-├── README.md
-├── LICENSE
-├── Docs/
-│   └── TECHNICAL.md          # 算法与参数完整说明
-├── Sources/AudioLivenessDetection/
-│   ├── LivenessModels.swift
-│   ├── SimpleVAD.swift
-│   ├── AudioFeatureExtractor.swift
-│   ├── AudioLivenessDetector.swift
-│   ├── AudioLivenessService.swift
-│   └── LivenessLogger.swift
-├── Examples/
-│   ├── CLI/                  # macOS 命令行 Demo
-│   └── iOSDemo/              # iOS SwiftUI Demo
-└── Tests/
+Sources/AudioLivenessDetection/   # Library
+Examples/CLI/                     # macOS demo
+Examples/iOSDemo/                 # iOS SwiftUI demo
+Docs/TECHNICAL.md                 # Full technical spec
+Tests/                            # Unit tests
 ```
 
-## 集成要点
+---
 
-| 项 | 说明 |
-|----|------|
-| PCM 格式 | int16 LE，bytesPerSample = 2 |
-| 单帧上限 | Service 侧 ≤ 4096 bytes |
-| 未提供格式字段 | 传 `0`，默认 32000 Hz / mono |
-| 日志 | `LivenessLogger.isEnabled = true`（默认开启） |
+## Integration Notes
 
-## 技术文档
+| Item | Value |
+|------|-------|
+| PCM | int16 LE, `bytesPerSample = 2` |
+| Max frame size (Service) | 4096 bytes |
+| Unknown format fields | pass `0` → defaults to 32 kHz / mono |
+| Logging | `LivenessLogger.isEnabled` (default `true`) |
 
-算法流程、特征公式、阈值常量见 [Docs/TECHNICAL.md](Docs/TECHNICAL.md)。
+---
 
-## 测试
+## Test
 
 ```bash
 swift test
 ```
 
+---
+
+## 中文简介
+
+本库在端侧分析 PCM 音频，判断麦克风输入是**真人实时说话**还是**录音回放**，不依赖云端 ASR。
+
+- 算法：能量+过零率 VAD → FFT 4096 → LF/HF/谱流特征 → 回放打分
+- 集成：Swift Package，iOS 13+ / macOS 11+
+- 完整参数见 [Docs/TECHNICAL.md](Docs/TECHNICAL.md)
+
+---
+
 ## License
 
-MIT — 见 [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE)
