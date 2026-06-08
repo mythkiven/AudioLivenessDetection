@@ -5,6 +5,7 @@
 **端侧 PCM 音频活体检测（Swift）—— 区分真人实时麦克风与录音回放。**
 
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
+[![CI](https://github.com/mythkiven/AudioLivenessDetection/actions/workflows/ci.yml/badge.svg)](https://github.com/mythkiven/AudioLivenessDetection/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2013%2B%20%7C%20macOS%2011%2B-blue.svg)](Package.swift)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![SPM](https://img.shields.io/badge/Swift%20PM-compatible-brightgreen.svg)](Package.swift)
@@ -123,6 +124,8 @@ swift run AudioLivenessDemoCLI
 | [README.md](README.md)（English） | 英文说明 |
 | [README.zh-CN.md](README.zh-CN.md)（本文件） | 中文说明 |
 | [Docs/TECHNICAL.md](Docs/TECHNICAL.md) | 算法、公式与全部阈值 |
+| [CHANGELOG.md](CHANGELOG.md) | 版本更新记录 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |
 
 ---
 

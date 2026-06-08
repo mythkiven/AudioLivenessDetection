@@ -5,6 +5,7 @@
 **On-device PCM audio liveness detection for Swift — classify live microphone speech vs recorded replay.**
 
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
+[![CI](https://github.com/mythkiven/AudioLivenessDetection/actions/workflows/ci.yml/badge.svg)](https://github.com/mythkiven/AudioLivenessDetection/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2013%2B%20%7C%20macOS%2011%2B-blue.svg)](Package.swift)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![SPM](https://img.shields.io/badge/Swift%20PM-compatible-brightgreen.svg)](Package.swift)
@@ -123,6 +124,8 @@ Speak into the mic — results print every 10 seconds. `Ctrl+C` to quit.
 | [README.md](README.md) (English) | Overview, install, demo |
 | [README.zh-CN.md](README.zh-CN.md) (简体中文) | 中文说明 |
 | [Docs/TECHNICAL.md](Docs/TECHNICAL.md) | Algorithm, formulas, all thresholds |
+| [CHANGELOG.md](CHANGELOG.md) | Release history |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 
 ---
 
