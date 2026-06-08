@@ -1,8 +1,8 @@
 # AudioLivenessDetection
 
-**On-device PCM audio liveness detection for Swift — classify live microphone speech vs recorded replay.**
+**English** | [简体中文](README.zh-CN.md)
 
-端侧 PCM 音频活体检测 · 纯 Swift · 零依赖 · 区分真人麦克风与录音回放
+**On-device PCM audio liveness detection for Swift — classify live microphone speech vs recorded replay.**
 
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/Platform-iOS%2013%2B%20%7C%20macOS%2011%2B-blue.svg)](Package.swift)
@@ -120,7 +120,8 @@ Speak into the mic — results print every 10 seconds. `Ctrl+C` to quit.
 
 | Doc | Audience |
 |-----|----------|
-| [README.md](README.md) (this file) | Overview, install, demo |
+| [README.md](README.md) (English) | Overview, install, demo |
+| [README.zh-CN.md](README.zh-CN.md) (简体中文) | 中文说明 |
 | [Docs/TECHNICAL.md](Docs/TECHNICAL.md) | Algorithm, formulas, all thresholds |
 
 ---
@@ -153,16 +154,6 @@ Tests/                            # Unit tests
 ```bash
 swift test
 ```
-
----
-
-## 中文简介
-
-本库在端侧分析 PCM 音频，判断麦克风输入是**真人实时说话**还是**录音回放**，不依赖云端 ASR。
-
-- 算法：能量+过零率 VAD → FFT 4096 → LF/HF/谱流特征 → 回放打分
-- 集成：Swift Package，iOS 13+ / macOS 11+
-- 完整参数见 [Docs/TECHNICAL.md](Docs/TECHNICAL.md)
 
 ---
 
